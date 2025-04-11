@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Add Product Purchase</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save</button>
+  </form>
+
+  <h3 class="mt-5">Purchase History</h3>
+  {% for date, purchases in grouped_purchases.items %}
+    <h4>{{ date }}</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Cost/Unit</th>
+          <th>Amount</th>
+          <th>Weight</th>
+          <th>Total Cost</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for purchase in purchases %}
+          <tr>
+            <td>{{ purchase.product_name }}</td>
+            <td>${{ purchase.cost_per_unit }}</td>
+            <td>{{ purchase.amount }}</td>
+            <td>{{ purchase.weight }}</td>
+            <td>${{ purchase.total_cost }}</td>
+            <td>
+              <a href="{% url 'delete_product' purchase.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const costInput = document.querySelector('#id_cost_per_unit');
+  const amountInput = document.querySelector('#id_amount');
+  const totalCostField = document.createElement('div');
+  totalCostField.innerHTML = '<strong>Total Cost:</strong> $<span id="total-cost">0.00</span>';
+  costInput.parentElement.appendChild(totalCostField);
+
+  function updateTotal() {
+    const cost = parseFloat(costInput.value) || 0;
+    const amount = parseInt(amountInput.value) || 0;
+    document.getElementById('total-cost').textContent = (cost * amount).toFixed(2);
+  }
+
+  costInput.addEventListener('input', updateTotal);
+  amountInput.addEventListener('input', updateTotal);
+});
+</script>
+  {% endfor %}
+{% endblock %}

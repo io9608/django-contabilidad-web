@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Dashboard</h2>
+  
+  <div class="row">
+    <!-- Investment Column -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Total Investment</h5>
+          <p>${{ total_investment|floatformat:2 }}</p>
+          <p>Your Contribution: ${{ total_initial|floatformat:2 }}</p>
+          <p>Partners' Contribution: ${{ total_partner_investment|floatformat:2 }}</p>
+        </div>
+      </div>
+
+      <!-- Stock Table -->
+      <div class="card mt-4">
+        <div class="card-body">
+          <h5 class="card-title">Current Stock</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Total Units</th>
+                <th>Total Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in product_stock %}
+                <tr>
+                  <td>{{ product.product_name }}</td>
+                  <td>{{ product.total_amount }}</td>
+                  <td>${{ product.total_cost|floatformat:2 }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="3">No products in stock</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profit Column -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Profit Summary</h5>
+          <p>Total Profit: ${{ total_profit|floatformat:2 }}</p>
+          <ul>
+            {% for partner in partners %}
+              <li>
+                {{ partner.name }}: ${{ partner.amount|floatformat:2 }} ({{ partner.profit_share }}%)
+                <a href="{% url 'delete_partner' partner.id %}" class="btn btn-sm btn-danger">Delete</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

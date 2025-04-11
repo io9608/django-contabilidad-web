@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Add Investment</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ investment_form.as_p }}
+    
+    <h4>Partners</h4>
+    {{ partner_formset.management_form }}
+    {% for form in partner_formset %}
+      <div class="partner-form">
+        {{ form.as_p }}
+      </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" id="add-partner">Add Partner</button>
+  </form>
+
+  <script>
+    // Dynamically add more partner forms
+    document.getElementById('add-partner').addEventListener('click', () => {
+      const formCount = document.querySelectorAll('.partner-form').length;
+      const newForm = document.querySelector('.partner-form').cloneNode(true);
+      newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formCount);
+      document.querySelector('#id_partners-TOTAL_FORMS').value = formCount + 1;
+      document.querySelector('form').insertBefore(newForm, document.querySelector('button[type="submit"]'));
+    });
+  </script>
+{% endblock %}
